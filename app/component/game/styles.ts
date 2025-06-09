@@ -57,8 +57,34 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  enemiesContainer: {
+    marginBottom: 16,
+    height: 120, // Fixed height for the entire enemies section
+  },
   enemiesList: {
-    paddingVertical: 8,
+    height: 90, // Match the height of enemyWrapper
+    flexGrow: 0, // Prevent vertical expansion
+    alignItems: 'center', // Center cards vertically in the list
+  },
+  enemyWrapper: {
+    width: 72, // 20% slimmer (90 * 0.8)
+    height: 90,
+    marginRight: 6,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 6,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyEnemySlot: {
+    backgroundColor: 'rgba(42, 42, 42, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ff4444',
+    borderStyle: 'dashed',
+    width: 72, // 20% slimmer to match enemyWrapper
+    height: 90, // Match the height of enemyWrapper
   },
   actionsContainer: {
     position: 'absolute',
@@ -119,9 +145,8 @@ export const styles = StyleSheet.create({
   },
   characterCard: {
     width: '100%',
+    height: '100%',
     backgroundColor: '#2a2a2a',
-    borderRadius: 8,
-    padding: 8,
     alignItems: 'center',
   },
   healthBarContainer: {
@@ -213,46 +238,37 @@ export const styles = StyleSheet.create({
   },
   // Empty party slot styles
   emptyPartySlot: {
-    aspectRatio: 1,
     backgroundColor: 'rgba(42, 42, 42, 0.5)',
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#444',
     borderStyle: 'dashed',
-    margin: 2,
-    flex: 1,
-    minWidth: '32%',
-    maxWidth: '32%',
+    width: 80, // 20% slimmer (100 * 0.8)
+    height: 100,
   },
   emptySlotText: {
     color: '#666',
     fontSize: 12,
   },
   partyMemberWrapper: {
-    flex: 1,
-    minWidth: '32%',
-    maxWidth: '32%',
-    margin: 2,
+    width: 80, // 20% slimmer (100 * 0.8)
+    height: 100,
+    marginRight: 6, // Reduced to match enemy cards
+    backgroundColor: '#2a2a2a',
+    borderRadius: 6, // Matched to enemy cards
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   heroCard: {
     backgroundColor: '#2a2a2a',
     borderRadius: 8,
-    padding: 12,
+    overflow: 'hidden',
     marginBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    aspectRatio: 1,
   },
-  heroInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  heroClass: {
-    color: '#aaa',
-    fontSize: 14,
-    marginBottom: 8,
-  },
+  
   partyGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -266,10 +282,13 @@ export const styles = StyleSheet.create({
     marginTop: 1,
   },
   partyContainer: {
-    marginTop: 8,
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -2,
+    padding: 4,
+    height: 100,
+    alignItems: 'center', // Center cards vertically in the list
+  },
+  scrollContentContainer: {
+    alignItems: 'center',
   },
   sectionTitle: {
     color: '#fff',

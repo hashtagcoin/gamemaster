@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, Dimensions, Text } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { assetManager, AssetType } from '../../services/assetManager';
 
 interface SceneViewProps {
@@ -59,21 +60,32 @@ const SceneView: React.FC<SceneViewProps> = ({ sceneDescription, sceneId, mapDat
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <View style={[styles.imagePlaceholder, styles.loadingContainer]}>
-          <Text style={styles.loadingText}>Generating scene...</Text>
-        </View>
-      ) : imageUri ? (
-        <Image 
-          source={{ uri: imageUri }} 
-          style={styles.sceneImage}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderText}>No scene image available</Text>
-        </View>
-      )}
+      <View style={styles.imageContainer}>
+        {loading ? (
+          <View style={[styles.imagePlaceholder, styles.loadingContainer]}>
+            <Text style={styles.loadingText}>Generating scene...</Text>
+          </View>
+        ) : imageUri ? (
+          <>
+            <Image 
+              source={{ uri: imageUri }} 
+              style={styles.sceneImage}
+              resizeMode="cover"
+            />
+            <LinearGradient
+              colors={['transparent', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)']}
+              style={styles.gradientOverlay}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              pointerEvents="none"
+            />
+          </>
+        ) : (
+          <View style={styles.imagePlaceholder}>
+            <Text style={styles.placeholderText}>No scene image available</Text>
+          </View>
+        )}
+      </View>
       
       {renderMap()}
     </View>
@@ -90,8 +102,16 @@ const styles = StyleSheet.create({
   },
   sceneImage: {
     width: '100%',
-    height: SCENE_WIDTH * 0.6, // 3:2 aspect ratio
+    height: SCENE_WIDTH * 0.3, // Reduced height by 50%
     backgroundColor: '#1a1a1a',
+  },
+  gradientOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    height: '100%',
+    zIndex: 1,
+  },
+  imageContainer: {
+    position: 'relative',
   },
   imagePlaceholder: {
     width: '100%',

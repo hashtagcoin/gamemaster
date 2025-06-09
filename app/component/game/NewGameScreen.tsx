@@ -246,23 +246,30 @@ const NewGameScreen = ({ handleActionSubmit }: NewGameScreenProps) => {
         maxHp={char.maxHp}
         isDead={char.is_dead}
         size="small"
+        fillContainer={true}
       />
     </View>
   );
 
-  const renderEnemy: ListRenderItem<Enemy> = ({ item }) => (
-    <CharacterAvatar
-      id={`enemy_${item.id}`}
-      name={item.name}
-      type="enemy"
-      description={item.description}
-      level={item.level}
-      hp={item.hp}
-      maxHp={item.maxHp}
-      isDead={item.is_dead}
-      isSelected={selectedEnemyId === item.id}
-      onPress={() => setSelectedEnemyId(item.id)}
-    />
+  const renderEnemy = (enemy: Enemy) => (
+    <View key={enemy.id} style={styles.enemyWrapper}>
+      <TouchableOpacity 
+        onPress={() => setSelectedEnemyId(enemy.id)}
+        disabled={isLoading}
+      >
+        <CharacterAvatar
+          id={`enemy_${enemy.id}`}
+          name={enemy.name}
+          type="enemy"
+          description={enemy.class}
+          level={enemy.level}
+          hp={enemy.hp}
+          maxHp={enemy.maxHp}
+          isDead={enemy.is_dead}
+          size="small"
+        />
+      </TouchableOpacity>
+    </View>
   );
 
   const handleAction = async (action: string) => {
@@ -341,47 +348,37 @@ const NewGameScreen = ({ handleActionSubmit }: NewGameScreenProps) => {
         maxHp={char.maxHp}
         isDead={char.is_dead}
         size="large"
+        fillContainer={true}
       />
-      <View style={styles.heroInfo}>
-        <Text style={styles.heroName}>{char.name}</Text>
-        <Text style={styles.heroClass}>Lvl {char.level} {char.class}</Text>
-        <View style={styles.healthBarContainer}>
-          <View 
-            style={[
-              styles.healthBar, 
-              { 
-                backgroundColor: char.hp / char.maxHp > 0.3 ? '#4caf50' : '#f44336',
-                width: `${Math.max(5, (char.hp / char.maxHp) * 100)}%` 
-              }
-            ]} 
-          />
-          <Text style={styles.healthText}>HP: {char.hp}/{char.maxHp}</Text>
-        </View>
-      </View>
     </View>
   );
 
   const renderPartyMembers = () => {
-    // Always show 6 slots (2 rows of 3)
+    // Always show 6 slots in a horizontal scroll
     const totalSlots = 6;
     const emptySlots = Math.max(0, totalSlots - partyMembers.length);
     
     return (
-      <>
+      <View style={{ marginBottom: 16 }}>
         <Text style={styles.sectionTitle}>Party Members</Text>
-        <View style={styles.partyContainer}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.partyContainer}
+          style={{ height: 100 }}
+        >
           {partyMembers.map((member) => (
             <View key={member.id} style={styles.partyMemberWrapper}>
               {renderCharacterCard(member)}
             </View>
           ))}
           {Array(emptySlots).fill(null).map((_, index) => (
-            <View key={`empty-${index}`} style={styles.emptyPartySlot}>
+            <View key={`empty-${index}`} style={[styles.partyMemberWrapper, styles.emptyPartySlot]}>
               <Text style={styles.emptySlotText}>Empty</Text>
             </View>
           ))}
-        </View>
-      </>
+        </ScrollView>
+      </View>
     );
   };
 
@@ -509,19 +506,7 @@ const NewGameScreen = ({ handleActionSubmit }: NewGameScreenProps) => {
             </ScrollView>
           </View>
           
-          {enemies.length > 0 && (
-            <>
-              <Text style={styles.enemiesTitle}>Enemies</Text>
-              <FlatList
-                data={enemies}
-                renderItem={renderEnemy}
-                keyExtractor={(item: Enemy) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.enemiesList}
-              />
-            </>
-          )}
+          {/* Enemies section has been moved to the right column */}
           
           <View style={styles.actionsContainer}>
             <TouchableOpacity 
@@ -564,15 +549,44 @@ const NewGameScreen = ({ handleActionSubmit }: NewGameScreenProps) => {
         </View>
       </View>
       
-      {/* Right Column - Log and Messages */}
+      {/* Right Column - Split into Log and Enemies */}
       <View style={styles.rightColumn}>
-        <Text style={styles.sectionTitle}>Battle Log</Text>
-        <ScrollView style={styles.logContainer}>
-          <Text style={styles.logText}>- Hero attacks Orc for 12 damage!</Text>
-          <Text style={styles.logText}>- Orc attacks Hero for 8 damage!</Text>
-          <Text style={styles.logText}>- Mage casts Fireball on Orc for 15 damage!</Text>
-          <Text style={styles.logText}>- Cleric heals Hero for 10 HP!</Text>
-        </ScrollView>
+        {/* Top Section - Battle Log */}
+        <View style={{ flex: 1, marginBottom: 16 }}>
+          <Text style={styles.sectionTitle}>Battle Log</Text>
+          <View style={[styles.logContainer, { flex: 1 }]}>
+            <ScrollView>
+              <Text style={styles.logText}>- Hero attacks Orc for 12 damage!</Text>
+              <Text style={styles.logText}>- Orc attacks Hero for 8 damage!</Text>
+              <Text style={styles.logText}>- Mage casts Fireball on Orc for 15 damage!</Text>
+              <Text style={styles.logText}>- Cleric heals Hero for 10 HP!</Text>
+            </ScrollView>
+          </View>
+        </View>
+        
+        {/* Bottom Section - Enemies */}
+        <View style={styles.enemiesContainer}>
+          <Text style={styles.sectionTitle}>Enemies</Text>
+          {enemies.length > 0 ? (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.enemiesList}
+              style={{ height: 100 }}
+            >
+              {enemies.map(enemy => renderEnemy(enemy))}
+              {enemies.length < 6 && (
+                <View style={[styles.enemyWrapper, styles.emptyEnemySlot]} key="empty-enemy-slot">
+                  <Text style={styles.emptySlotText}>Empty</Text>
+                </View>
+              )}
+            </ScrollView>
+          ) : (
+            <View style={[styles.enemyWrapper, styles.emptyEnemySlot]}>
+              <Text style={styles.emptySlotText}>No Enemies</Text>
+            </View>
+          )}
+        </View>
       </View>
     </SafeAreaView>
   );

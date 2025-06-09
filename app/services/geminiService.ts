@@ -71,13 +71,25 @@ Current game state and player's action:\n${prompt}`;
     const response = await result.response;
     const text = response.text();
     
+    // Clean the response text by removing control characters
+    const cleanText = text.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200F\u2028-\u202F\u205F-\u206F\u3000\uFEFF]/g, '');
+    
     // Extract JSON from the response
-    const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/);
+    const jsonMatch = cleanText.match(/```json\n([\s\S]*?)\n```/);
     if (!jsonMatch) {
+      console.error('No JSON found in response. Full response:', cleanText);
       throw new Error('Could not parse response from Game Master');
     }
     
-    const responseData = JSON.parse(jsonMatch[1]);
+    // Parse the JSON with error handling
+    let responseData;
+    try {
+      responseData = JSON.parse(jsonMatch[1]);
+    } catch (parseError) {
+      console.error('Error parsing JSON:', parseError);
+      console.error('Problematic JSON:', jsonMatch[1]);
+      throw new Error('Invalid response format from Game Master');
+    }
     
     return {
       text: responseData.narrative,

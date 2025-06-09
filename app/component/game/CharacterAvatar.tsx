@@ -14,6 +14,7 @@ interface CharacterAvatarProps {
   isSelected?: boolean;
   onPress?: () => void;
   size?: 'small' | 'medium' | 'large';
+  fillContainer?: boolean;
 }
 
 const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
@@ -164,7 +165,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   placeholder: {
-    backgroundColor: '#444',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#2a2a2a',
     justifyContent: 'center',
     alignItems: 'center',
   },
